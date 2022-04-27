@@ -45,6 +45,8 @@ class GameScene {
   private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
+	bool oldInput = 0;
+
 	Audio* audio_ = nullptr;
 	DebugText* debugText_ = nullptr;
 	/// <summary>
@@ -55,4 +57,13 @@ class GameScene {
 	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
 	int32_t scale_ = 0;
+
+	static const int XYZ = 3;
+
+	float x[XYZ] = {0};
+	float y[XYZ] = {0};
+	float z[XYZ] = {0}; 
+
+	float cameraNum = 0;
+
 };
