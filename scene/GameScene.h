@@ -58,12 +58,9 @@ class GameScene {
 	ViewProjection viewProjection_;
 	int32_t scale_ = 0;
 
-	static const int XYZ = 3;
+	float Radius = 10.0f;
+	float kakudo = 0.0f;
 
-	float x[XYZ] = {0};
-	float y[XYZ] = {0};
-	float z[XYZ] = {0}; 
-
-	float cameraNum = 0;
-
+	float xSeihu = 1.0f;
+	float zSeihu = 1.0f;
 };

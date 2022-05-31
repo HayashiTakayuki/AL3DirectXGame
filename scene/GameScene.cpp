@@ -1,7 +1,7 @@
 ﻿#include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
-#include <random>
+#include<math.h>
 
 using namespace DirectX;
 
@@ -19,83 +19,44 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("mario.jpg");
 	model_ = Model::Create();
 	
-		//乱数シード生成器
-	std::random_device seed_gen;
-	//メルセンヌ・ツイスター
-	std::mt19937_64 engine(seed_gen());
-	//乱数範囲（座標用）
-	std::uniform_real_distribution<float> posDist(-10.0f, 10.0f);
-
-	for (int i = 0; i < XYZ; i++) 
-	{
-		x[i] = posDist(engine);
-		y[i] = posDist(engine);
-		z[i] = posDist(engine);
-	}
-
-	oldInput = input_->PushKey(DIK_SPACE);
-
-	viewProjection_.eye = {x[0], y[0], z[0]};
-
-	viewProjection_.target = {0, 0, 0};
-	viewProjection_.up = {0, 1.0f, 0};
+	viewProjection_.eye = {10.0f, 0, 0};
 
 	viewProjection_.Initialize();
 	
-	worldTransform_.scale_ = {1.0f, 1.0f, 1.0f};
-	worldTransform_.rotation_ = {0, 0, 0};
+	worldTransform_.scale_ = {1.0f, 1.0f,1.0f};
 	worldTransform_.translation_ = {0,0,0};
-
 	worldTransform_.Initialize();
 }
 
 void GameScene::Update() 
 {
-	if ((input_->PushKey(DIK_SPACE)) && oldInput == false) 
+	viewProjection_.eye.x = Radius * cos(kakudo); 
+	viewProjection_.eye.z = Radius * sin(kakudo);
+
+	kakudo+= 0.03f;
+
+	if (kakudo > 360) 
 	{
-		cameraNum++;
-	}
-	
-	if (input_->PushKey(DIK_SPACE)) 
-	{
-		oldInput = true;
-	} 
-	else 
-	{
-		oldInput = false;
+		kakudo = 0;
 	}
 
-	if (cameraNum >=XYZ) 
-	{
-		cameraNum = 0;
-	}
+	debugText_->SetPos(50, 50);
+	debugText_->Printf(
+	  "eye:(%f,%f,%f)", viewProjection_.eye.x, viewProjection_.eye.y, viewProjection_.eye.z);
+	debugText_->SetPos(50, 70);
+	debugText_->Printf("kakudo:(%f)", kakudo);
 
-	for (int i = 0;i < XYZ;i++) 
-	{
-		if (cameraNum == i) 
-		{
-			viewProjection_.eye = {x[i], y[i], z[i]};
-		}
-	}
+	//if (viewProjection_.eye.x < -10.0f || viewProjection_.eye.x > 10.0f) 
+	//{
+	//	XCameraSpeed *= -1.0f;
+	//}
+	//if (viewProjection_.eye.z < -10.0f || viewProjection_.eye.z > 10.0f) 
+	//{
+	//	ZCameraSpeed *= -1.0f;
+	//}
 
 	viewProjection_.UpdateMatrix();
 
-	debugText_->SetPos(50, 30);
-	debugText_->Printf("Camera1");
-	debugText_->SetPos(50, 130);
-	debugText_->Printf("Camera2");
-	debugText_->SetPos(50, 230);
-	debugText_->Printf("Camera3");
-
-	for (int i = 0; i < XYZ; i++) 
-	{
-		debugText_->SetPos(50, 50 + i*100);
-		debugText_->Printf("eye:(%f,%f,%f)", x[i], y[i], z[i]);
-		debugText_->SetPos(50, 70 + i * 100);
-		debugText_->Printf("target:(%f,%f,%f)", viewProjection_.target.x, viewProjection_.target.y,viewProjection_.target.z);
-		debugText_->SetPos(50, 90 + i * 100);
-		debugText_->Printf("up:(%f,%f,%f)", viewProjection_.up.x, viewProjection_.up.y, viewProjection_.up.z);
-	}
 }
 
 void GameScene::Draw() {
